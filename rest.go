@@ -163,10 +163,27 @@ func (handler BaseRestHandler) HandleList(ctx context.Context, out *flamel.Respo
 		count = l
 	}
 
-	renderer := flamel.JSONRenderer{}
-	renderer.Data = ListResponse{results[:count], l > opts.Size}
+	var renderer flamel.Renderer
 
-	out.Renderer = &renderer
+	// retrieve the negotiated method
+	ins := flamel.InputsFromContext(ctx)
+	accept := ins[flamel.KeyNegotiatedContent].Value()
+
+	if accept == "text/csv" {
+		r := &flamel.DownloadRenderer{}
+		csv, err := Resources(results).ToCSV()
+		if err != nil {
+			return handler.ErrorToStatus(ctx, err, out)
+		}
+		r.Data = []byte(csv)
+		renderer = r
+	} else {
+		jrenderer := flamel.JSONRenderer{}
+		jrenderer.Data = ListResponse{results[:count], l > opts.Size}
+		renderer = &jrenderer
+	}
+
+	out.Renderer = renderer
 
 	return flamel.HttpResponse{Status: http.StatusOK}
 }

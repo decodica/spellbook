@@ -3,6 +3,7 @@ package subscription
 import (
 	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
+	"decodica.com/spellbook/format/csv"
 	"encoding/json"
 	"time"
 )
@@ -84,6 +85,25 @@ func (subscription *Subscription) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// csv methods
+func (subscription *Subscription) ToCSV() ([]string, error) {
+	return []string{
+		subscription.Id(),
+		subscription.Email,
+		subscription.Country,
+		subscription.FirstName,
+		subscription.LastName,
+		subscription.Organization,
+		subscription.Position,
+		subscription.Notes,
+		subscription.Created.Format(time.RFC3339),
+	}, nil
+}
+
+func (subscription *Subscription) FromCSV(csv []string) error {
+	return spellbook.NewUnsupportedError()
+}
+
 func (subscription *Subscription) Id() string {
 	return subscription.StringID()
 }
@@ -100,6 +120,9 @@ func (subscription *Subscription) ToRepresentation(rtype spellbook.Representatio
 	switch rtype {
 	case spellbook.RepresentationTypeJSON:
 		return json.Marshal(subscription)
+	case spellbook.RepresentationTypeCSV:
+		s, err := csv.Marshal(subscription)
+		return []byte(s), err
 	}
 	return nil, spellbook.NewUnsupportedError()
 }

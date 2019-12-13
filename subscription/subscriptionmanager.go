@@ -13,16 +13,28 @@ import (
 	"time"
 )
 
-func NewSubscriptionController() *spellbook.RestController {
+type SubscriptionController struct {
+	*spellbook.RestController
+}
+
+func (co SubscriptionController) DefaultOffer() string {
+	return "application/json"
+}
+
+func (co SubscriptionController) Offers() []string {
+	return []string{"application/json", "text/csv"}
+}
+
+func NewSubscriptionController() SubscriptionController {
 	return NewSubscriptionControllerWithKey("")
 }
 
-func NewSubscriptionControllerWithKey(key string) *spellbook.RestController {
+func NewSubscriptionControllerWithKey(key string) SubscriptionController {
 	man := subscriptionManager{}
 	handler := spellbook.BaseRestHandler{Manager: man}
 	c := spellbook.NewRestController(handler)
 	c.Key = key
-	return c
+	return SubscriptionController{c}
 }
 
 type subscriptionManager struct{}

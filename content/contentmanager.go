@@ -190,6 +190,10 @@ func (manager ContentManager) Create(ctx context.Context, res spellbook.Resource
 		return spellbook.NewFieldError("title", errors.New("title can't be empty"))
 	}
 
+	if content.Slug == "" && content.Code == "" {
+		return spellbook.NewFieldError("slug", fmt.Errorf("non special content can't have an empty slug"))
+	}
+
 	// if the same slug already exists, we must return
 	// otherwise we would overwrite an existing entry, which is not in the spirit of the create method
 	q := model.NewQuery((*Content)(nil))
@@ -263,13 +267,13 @@ func (manager ContentManager) Update(ctx context.Context, res spellbook.Resource
 		return spellbook.NewFieldError("title", errors.New("title can't be empty"))
 	}
 
-	// todo: check locale uniqueness. Why wasnt it tested in update and it was in create?
-
-	// if the same slug already exists, we must return
-	// otherwise we would overwrite an existing entry, which is not in the spirit of the create method
 	// if the same slug already exists, we must return
 	// otherwise we would overwrite an existing entry, which is not in the spirit of the create method
 	q := model.NewQuery((*Content)(nil))
+
+	if other.Slug == "" && other.Code == "" {
+		return spellbook.NewFieldError("slug", fmt.Errorf("non special content can't have an empty slug"))
+	}
 
 	reason := "code"
 	if other.Code == "" {
@@ -283,17 +287,12 @@ func (manager ContentManager) Update(ctx context.Context, res spellbook.Resource
 
 	compare := Content{}
 	err := q.First(ctx, &compare)
-	if err == datastore.ErrNoSuchEntity && compare.EncodedKey() != content.EncodedKey() {
+	if err == nil && compare.EncodedKey() != content.EncodedKey() {
 		return spellbook.NewFieldError("slug", fmt.Errorf("a content with the same %s already exists", reason))
 	}
 
-	if err != nil {
+	if err != nil && err != datastore.ErrNoSuchEntity {
 		return spellbook.NewFieldError("slug", fmt.Errorf("error verifying content correctness: %s", err.Error()))
-	}
-
-	if content.Id() != compare.Id() {
-		msg := fmt.Sprintf("a content with code %s or slug %s already exists. Code or slug must be unique.", content.Code, content.Slug)
-		return spellbook.NewFieldError("code", errors.New(msg))
 	}
 
 	content.Type = other.Type

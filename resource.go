@@ -3,6 +3,8 @@ package spellbook
 import (
 	"context"
 	"decodica.com/flamel"
+	"decodica.com/spellbook/format/csv"
+	"errors"
 	"google.golang.org/appengine/log"
 	"net/http"
 )
@@ -41,12 +43,31 @@ type RepresentationType int
 const (
 	RepresentationTypeJSON = iota
 	RepresentationTypeUrlencoded
+	RepresentationTypeCSV
 )
 
 type Resource interface {
 	Id() string
 	ToRepresentation(rtype RepresentationType) ([]byte, error)
 	FromRepresentation(rtype RepresentationType, data []byte) error
+}
+
+type Resources []Resource
+
+func (r Resources) ToCSV() (string, error) {
+	csvbles := make([]csv.CSVble, len(r))
+	for i, res := range r {
+		csvble, ok := res.(csv.CSVble)
+		if !ok {
+			return "", NewFieldError("", errors.New("resource is not convertible to csv"))
+		}
+		csvbles[i] = csvble
+	}
+	return csv.MarshalList(csvbles)
+}
+
+func (r Resources) FromCSV([]string) error {
+	return NewUnsupportedError()
 }
 
 /**
