@@ -38,6 +38,11 @@ type Manager interface {
 	Delete(ctx context.Context, resource Resource) error
 }
 
+type PatchManager interface {
+	Manager
+	Patch(ctx context.Context, resource Resource, fields map[string]interface{}) error
+}
+
 type RepresentationType int
 
 const (
@@ -123,6 +128,12 @@ func (controller *RestController) Process(ctx context.Context, out *flamel.Respo
 			return controller.HandleList(ctx, out)
 		}
 		return controller.HandleGet(ctx, controller.Key, out)
+	case http.MethodPatch:
+		if !hasKey {
+			log.Errorf(ctx, "no item was specify for patch method")
+			return flamel.HttpResponse{Status: http.StatusBadRequest}
+		}
+		return controller.HandlePatch(ctx, controller.Key, out)
 	case http.MethodPut:
 		if !hasKey {
 			log.Errorf(ctx, "no item was specify for put method")

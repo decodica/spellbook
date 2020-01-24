@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"context"
 	"decodica.com/flamel"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -20,6 +21,7 @@ type ReadHandler interface {
 type WriteHandler interface {
 	HandlePost(context context.Context, out *flamel.ResponseOutput) flamel.HttpResponse
 	HandlePut(context context.Context, key string, out *flamel.ResponseOutput) flamel.HttpResponse
+	HandlePatch(context context.Context, key string, out *flamel.ResponseOutput) flamel.HttpResponse
 	HandleDelete(context context.Context, key string, out *flamel.ResponseOutput) flamel.HttpResponse
 }
 
@@ -242,6 +244,45 @@ func (handler BaseRestHandler) HandlePut(ctx context.Context, key string, out *f
 	if err = handler.Manager.Update(ctx, resource, []byte(j.Value())); err != nil {
 		return handler.ErrorToStatus(ctx, err, out)
 	}
+
+	renderer.Data = resource
+	return flamel.HttpResponse{Status: http.StatusOK}
+}
+
+// Handles put requests, ensuring the update of the requested resource
+func (handler BaseRestHandler) HandlePatch(ctx context.Context, key string, out *flamel.ResponseOutput) flamel.HttpResponse {
+
+	man, ok := handler.Manager.(PatchManager)
+	if !ok {
+		log.Debugf(ctx, "manager is %v", handler.Manager)
+		return handler.ErrorToStatus(ctx, NewUnsupportedError(), out)
+	}
+
+	renderer := flamel.JSONRenderer{}
+	out.Renderer = &renderer
+
+	ins := flamel.InputsFromContext(ctx)
+	j, ok := ins[flamel.KeyRequestJSON]
+	if !ok {
+		return flamel.HttpResponse{Status: http.StatusBadRequest}
+	}
+
+	resource, err := man.FromId(ctx, key)
+	if err != nil {
+		return handler.ErrorToStatus(ctx, err, out)
+	}
+
+
+	fields := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(j.Value()), &fields); err != nil {
+		log.Errorf(ctx, "invalid json: %s", err)
+		return handler.ErrorToStatus(ctx, NewFieldError("json", err), out)
+	}
+
+	if err = man.Patch(ctx, resource, fields); err != nil {
+		return handler.ErrorToStatus(ctx, err, out)
+	}
+
 
 	renderer.Data = resource
 	return flamel.HttpResponse{Status: http.StatusOK}
