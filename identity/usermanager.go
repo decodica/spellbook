@@ -217,7 +217,7 @@ func (manager UserManager) Create(ctx context.Context, res spellbook.Resource, b
 
 	err = model.CreateWithOptions(ctx, user, &opts)
 	if err != nil {
-		return fmt.Errorf("error creating post %s: %s", user.Name, err)
+		return fmt.Errorf("error creating user %s: %s", user.Name, err)
 	}
 
 	return nil

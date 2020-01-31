@@ -153,7 +153,7 @@ func (manager SqlUserManager) Create(ctx context.Context, res spellbook.Resource
 	db := sql.FromContext(ctx)
 
 	if err := db.Create(user).Error; err != nil {
-		return fmt.Errorf("error creating post %s: %s", user.Name, err)
+		return fmt.Errorf("error creating user %s: %s", user.Name, err)
 	}
 
 	return nil

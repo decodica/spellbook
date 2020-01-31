@@ -16,15 +16,26 @@ func (authenticator SqlAuthenticator) Authenticate(ctx context.Context) context.
 	inputs := flamel.InputsFromContext(ctx)
 	if tkn, ok := inputs[spellbook.HeaderToken]; ok {
 		token := tkn.Value()
-		// grab the last chars after hashLength
-		u := User{}
+
 		db := sql.FromContext(ctx)
-		err := db.Where("token = ?", token).First(&u).Error
-		if err != nil {
-			return ctx
+		var u spellbook.Identity
+		if IsServiceAccountToken(token) {
+			sa := ServiceAccount{}
+			err := db.Where("token = ?", token).First(&sa).Error
+			if err != nil {
+				return ctx
+			}
+			u = sa
+		} else {
+			us := User{}
+			err := db.Where("token = ?", token).First(&us).Error
+			if err != nil {
+				return ctx
+			}
+			u = us
 		}
 
-		if !u.IsEnabled() {
+		if !u.HasPermission(spellbook.PermissionEnabled) {
 			return ctx
 		}
 
