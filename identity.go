@@ -66,6 +66,7 @@ func NamedPermissionToPermission(name string) Permission {
 
 type Identity interface {
 	HasPermission(permission Permission) bool
+	Username() string
 }
 
 func IdentityFromContext(ctx context.Context) Identity {
