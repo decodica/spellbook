@@ -10,8 +10,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"google.golang.org/appengine/log"
 	"net/http"
+	"net/url"
 	"strconv"
-	"strings"
 )
 
 type ReadHandler interface {
@@ -42,6 +42,11 @@ type BaseRestHandler struct {
 
 // Builds the paging options, ordering and standard inputs of a given request
 func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.ResponseOutput, opts *ListOptions) (*ListOptions, error) {
+
+	const pageFilter = "page"
+	const resultsFilter = "results"
+	const orderFilter = "order"
+
 	// build paging
 	opts.Size = 20
 	opts.Page = 0
@@ -81,18 +86,28 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 		}
 	}
 
-	// filter is not mandatory
-	if fin, ok := ins["filter"]; ok {
-		finv := fin.Value()
-		filters := strings.Split(finv, "^")
-		opts.Filters = make([]Filter, len(filters), cap(filters))
-		for i, filter := range filters {
-			farray := strings.Split(filter, "=")
-			if len(farray) > 1 {
-				opts.Filters[i] = Filter{farray[0], farray[1]}
-			}
-		}
+	// read the query
+	rq, err := ins.GetString(flamel.KeyRequestQuery)
+	if err != nil {
+		msg := fmt.Sprintf("invalid query: %s", rq)
+		return nil, errors.New(msg)
+	}
 
+
+	values, err := url.ParseQuery(rq)
+	if err != nil {
+		msg := fmt.Sprintf("unparsable query: %s", rq)
+		return nil, errors.New(msg)
+	}
+
+
+	for k, vs := range values {
+		if k == pageFilter ||  k == orderFilter || k == resultsFilter {
+			continue
+		}
+		for _, v := range vs {
+			opts.Filters = append(opts.Filters, Filter{Field: k, Value: v})
+		}
 	}
 
 	return opts, nil
