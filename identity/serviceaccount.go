@@ -143,3 +143,6 @@ func (sa *ServiceAccount) ToRepresentation(rtype spellbook.RepresentationType) (
 	}
 	return nil, spellbook.NewUnsupportedError()
 }
+func (sa ServiceAccount) Username() string {
+	return sa.Label
+}
