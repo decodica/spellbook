@@ -43,10 +43,6 @@ type BaseRestHandler struct {
 // Builds the paging options, ordering and standard inputs of a given request
 func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.ResponseOutput, opts *ListOptions) (*ListOptions, error) {
 
-	const pageFilter = "page"
-	const resultsFilter = "results"
-	const orderFilter = "order"
-
 	// build paging
 	opts.Size = 20
 	opts.Page = 0
@@ -102,7 +98,7 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 
 
 	for k, vs := range values {
-		if k == pageFilter ||  k == orderFilter || k == resultsFilter {
+		if k == FilterPageKey ||  k == FilterOrderKey || k == FilterResultsKey || k == FilterPropertyKey {
 			continue
 		}
 		for _, v := range vs {

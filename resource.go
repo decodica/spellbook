@@ -86,6 +86,11 @@ type RestController struct {
 	extenders map[string][]Extender
 }
 
+const FilterPropertyKey = "property"
+const FilterOrderKey = "order"
+const FilterResultsKey = "results"
+const FilterPageKey = "page"
+
 func NewBaseRestController() *RestController {
 	return NewRestController(BaseRestHandler{})
 }
@@ -115,7 +120,7 @@ func (controller *RestController) Process(ctx context.Context, out *flamel.Respo
 
 	method := ins[flamel.KeyRequestMethod].Value()
 	hasKey := controller.Key != ""
-	prop, hasProperty := ins["property"]
+	prop, hasProperty := ins[FilterPropertyKey]
 
 	switch method {
 	case http.MethodPost:
