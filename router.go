@@ -100,3 +100,12 @@ func (router InternationalRouter) RouteForPath(ctx context.Context, path string)
 	}
 	return c, nil, controller.(flamel.Controller)
 }
+
+func LocaleStringFromContext(ctx context.Context) string {
+	tag, ok := ctx.Value(KeyLanguageTag).(language.Tag)
+	if !ok {
+		return ""
+	}
+
+	return tag.String()
+}
