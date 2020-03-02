@@ -9,13 +9,17 @@ import (
 	"fmt"
 	"github.com/disintegration/imaging"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"google.golang.org/appengine/file"
 	"google.golang.org/appengine/log"
 	"image"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
+
+const KeyEnvBucketCredentials = "BUCKET_CREDENTIALS"
 
 func NewFileController() *spellbook.RestController {
 	return NewFileControllerWithKey("")
@@ -40,6 +44,11 @@ func (manager FileManager) BucketName(ctx context.Context) (string, error) {
 		bucket = b
 	}
 	return bucket, nil
+}
+
+func (manager FileManager) NewClient(ctx context.Context) (*storage.Client, error) {
+	credentials := os.Getenv(KeyEnvBucketCredentials)
+	return storage.NewClient(ctx, option.WithCredentialsFile(credentials))
 }
 
 func (manager FileManager) NewResource(ctx context.Context) (spellbook.Resource, error) {
@@ -85,7 +94,7 @@ func (manager FileManager) ListOf(ctx context.Context, opts spellbook.ListOption
 		return nil, err
 	}
 
-	client, err := storage.NewClient(ctx)
+	client, err := manager.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client: %s", err.Error())
 	}
@@ -264,7 +273,7 @@ func (manager FileManager) Create(ctx context.Context, res spellbook.Resource, b
 		return err
 	}
 
-	client, err := storage.NewClient(ctx)
+	client, err := manager.NewClient(ctx)
 	if err != nil {
 		msg := fmt.Sprintf("failed to create client: %s", err.Error())
 		return spellbook.NewFieldError("client", errors.New(msg))
