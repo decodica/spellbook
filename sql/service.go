@@ -28,12 +28,13 @@ func (service *Service) Name() string {
 
 func (service *Service) Initialize() {
 	db, err := gorm.Open("postgres", service.Connection)
-	db.LogMode(service.Debug)
-
 	if err != nil {
-		db.Close()
 		panic(err)
 	}
+
+	db.LogMode(service.Debug)
+
+
 	service.db = db
 	if service.Migration != nil {
 		service.Migration.Execute(service.db)
