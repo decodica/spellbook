@@ -35,21 +35,28 @@ func (errs Errors) MarshalJSON() ([]byte, error) {
 
 // FieldError represents a missing required field or a malformed field.
 // It usually leads to a BadRequest Error
+// arguments is a slice containing possible error variables
 type FieldError struct {
 	error
 	field string
+	args []string
 }
 
 func NewFieldError(field string, error error) FieldError {
-	return FieldError{error, field}
+	return FieldError{error: error, field: field}
+}
+
+func (err *FieldError) AddArgument(argument string) {
+	err.args = append(err.args, argument)
 }
 
 func (err FieldError) MarshalJSON() ([]byte, error) {
 	type Alias struct {
 		Field string `json:"field"`
 		Error string `json:"error"`
+		Args []string `json:"args"`
 	}
-	return json.Marshal(Alias{err.field, err.Error()})
+	return json.Marshal(Alias{err.field, err.Error(), err.args})
 }
 
 // Permission error denotes that the requested action cannot be performed
