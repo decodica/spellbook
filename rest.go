@@ -318,7 +318,7 @@ func (handler BaseRestHandler) HandleDelete(ctx context.Context, key string, out
 // Converts an error to its equivalent HTTP representation
 func (handler BaseRestHandler) ErrorToStatus(ctx context.Context, err error, out *flamel.ResponseOutput) flamel.HttpResponse {
 	log.Errorf(ctx, "%s", err.Error())
-	switch err.(type) {
+	switch e :=err.(type) {
 	case UnsupportedError:
 		return flamel.HttpResponse{Status: http.StatusMethodNotAllowed}
 	case FieldError:
@@ -326,9 +326,11 @@ func (handler BaseRestHandler) ErrorToStatus(ctx context.Context, err error, out
 		renderer.Data = struct {
 			Field string
 			Error string
+			Args []string
 		}{
-			err.(FieldError).field,
-			err.(FieldError).error.Error(),
+			e.field,
+			e.Error(),
+			e.args,
 		}
 		out.Renderer = &renderer
 		return flamel.HttpResponse{Status: http.StatusBadRequest}
@@ -337,7 +339,7 @@ func (handler BaseRestHandler) ErrorToStatus(ctx context.Context, err error, out
 		renderer.Data = struct {
 			Error string
 		}{
-			err.(PermissionError).Error(),
+			e.Error(),
 		}
 		out.Renderer = &renderer
 		return flamel.HttpResponse{Status: http.StatusForbidden}
