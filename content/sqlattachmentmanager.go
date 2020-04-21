@@ -73,7 +73,8 @@ func (manager SqlAttachmentManager) ListOf(ctx context.Context, opts spellbook.L
 
 	for _, filter := range opts.Filters {
 		field := sql.ToColumnName(filter.Field)
-		db = db.Where(fmt.Sprintf("%q = ?", field), filter.Value)
+		val := filter.Value
+		db = db.Where(fmt.Sprintf("%q = ?", field), val)
 	}
 
 	if opts.Order != "" {

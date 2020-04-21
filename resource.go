@@ -18,9 +18,20 @@ type ListOptions struct {
 	Filters    []Filter // example url: &filter=Locale=it^Category=services
 }
 
+type FilterOperator string
+const (
+	FilterOperatorLessThan = "lt"
+	FilterOperatorGreaterThan = "gt"
+	FilterOperatorLessOrEqualThan = "le"
+	FilterOperatorGreaterOrEqualThan = "ge"
+	FilterOperatorExact = "ex"
+	FilterOperatorLike = "li"
+)
+
 type Filter struct {
 	Field string
 	Value string
+	Operator FilterOperator
 }
 
 type ListResponse struct {

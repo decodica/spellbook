@@ -2,7 +2,10 @@ package sql
 
 import (
 	"context"
+	"decodica.com/spellbook"
+	"fmt"
 	"github.com/jinzhu/gorm"
+	"strings"
 )
 
 const name = "__sql_service"
@@ -64,4 +67,43 @@ func FromContext(ctx context.Context) *gorm.DB {
 
 func ToColumnName(name string) string {
 	return gorm.ToColumnName(name)
+}
+
+func OperatorToSymbol(op spellbook.FilterOperator) string {
+	switch op {
+	case spellbook.FilterOperatorLessThan:
+		return "<"
+	case spellbook.FilterOperatorGreaterThan:
+		return ">"
+	case spellbook.FilterOperatorLessOrEqualThan:
+		return "<="
+	case spellbook.FilterOperatorGreaterOrEqualThan:
+		return ">="
+	case spellbook.FilterOperatorExact:
+		return "="
+	case spellbook.FilterOperatorLike:
+		return "LIKE"
+	}
+	return ""
+}
+
+func FiltersToCondition(fs []spellbook.Filter) string {
+	if fs == nil || len(fs) == 0 {
+		return ""
+	}
+	where := strings.Builder{}
+	for i, f := range fs {
+		if i > 0 {
+			where.WriteString(" AND ")
+		}
+		os := OperatorToSymbol(f.Operator)
+		dbField := ToColumnName(f.Field)
+		val := f.Value
+		if val == "null" && f.Operator == spellbook.FilterOperatorExact {
+			where.WriteString(fmt.Sprintf("%q IS NULL", dbField))
+		} else {
+			where.WriteString(fmt.Sprintf("%q %s %q", dbField, os, f.Value))
+		}
+	}
+	return where.String()
 }
