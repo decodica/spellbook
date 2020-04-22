@@ -24,8 +24,8 @@ const (
 	FilterOperatorGreaterThan = "gt"
 	FilterOperatorLessOrEqualThan = "le"
 	FilterOperatorGreaterOrEqualThan = "ge"
-	FilterOperatorExact = "ex"
-	FilterOperatorLike = "li"
+	FilterOperatorExact = "exact"
+	FilterOperatorNotExact = "nexact"
 )
 
 type Filter struct {
