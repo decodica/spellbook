@@ -70,10 +70,7 @@ func (manager SqlContentManager) ListOf(ctx context.Context, opts spellbook.List
 	db := sql.FromContext(ctx)
 	db = db.Offset(opts.Page * opts.Size)
 
-	for _, filter := range opts.Filters {
-		field := sql.ToColumnName(filter.Field)
-		db = db.Where(fmt.Sprintf("%q = ?", field), filter.Value)
-	}
+	db = db.Where(sql.FiltersToCondition(opts.Filters))
 
 	if opts.Order != "" {
 		dir := " asc"

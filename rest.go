@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type ReadHandler interface {
@@ -102,7 +103,37 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 			continue
 		}
 		for _, v := range vs {
-			opts.Filters = append(opts.Filters, Filter{Field: k, Value: v})
+			f := Filter{Value: v}
+
+			if strings.Contains(k, ":") {
+				spt := strings.SplitN(k, ":", 2)
+				switch spt[0] {
+				case "lt":
+					f.Operator = FilterOperatorLessThan
+					f.Field = spt[1]
+				case "gt":
+					f.Operator = FilterOperatorGreaterThan
+					f.Field = spt[1]
+				case "le":
+					f.Operator = FilterOperatorLessOrEqualThan
+					f.Field = spt[1]
+				case "ge":
+					f.Operator = FilterOperatorGreaterOrEqualThan
+					f.Field = spt[1]
+				case "ex":
+					f.Operator = FilterOperatorExact
+					f.Field = spt[1]
+				case "li":
+					f.Operator = FilterOperatorLike
+					f.Field = spt[1]
+				default:
+					f.Operator = FilterOperatorExact
+					f.Field = spt[1]
+				}
+			} else {
+				f.Field = k
+			}
+			opts.Filters = append(opts.Filters, f)
 		}
 	}
 

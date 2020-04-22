@@ -2,7 +2,11 @@ package sql
 
 import (
 	"context"
+	"decodica.com/spellbook"
+	"fmt"
 	"github.com/jinzhu/gorm"
+	"strconv"
+	"strings"
 )
 
 const name = "__sql_service"
@@ -64,4 +68,50 @@ func FromContext(ctx context.Context) *gorm.DB {
 
 func ToColumnName(name string) string {
 	return gorm.ToColumnName(name)
+}
+
+func OperatorToSymbol(op spellbook.FilterOperator) string {
+	switch op {
+	case spellbook.FilterOperatorLessThan:
+		return "<"
+	case spellbook.FilterOperatorGreaterThan:
+		return ">"
+	case spellbook.FilterOperatorLessOrEqualThan:
+		return "<="
+	case spellbook.FilterOperatorGreaterOrEqualThan:
+		return ">="
+	case spellbook.FilterOperatorExact:
+		return "="
+	case spellbook.FilterOperatorLike:
+		return "LIKE"
+	}
+	return "="
+}
+
+func FilterToCondition(f spellbook.Filter) string {
+	os := OperatorToSymbol(f.Operator)
+	dbField := ToColumnName(f.Field)
+	val := f.Value
+	if val == "null" && f.Operator == spellbook.FilterOperatorExact {
+		return fmt.Sprintf("%q IS NULL", dbField)
+	}
+	if iVal, err := strconv.Atoi(val); err == nil {
+		return fmt.Sprintf("%q %s %d", dbField, os, iVal)
+	}
+	return fmt.Sprintf("%q %s '%s'", dbField, os, f.Value)
+}
+
+
+func FiltersToCondition(fs []spellbook.Filter) string {
+	if fs == nil || len(fs) == 0 {
+		return ""
+	}
+	where := strings.Builder{}
+	for i, f := range fs {
+		if i > 0 {
+			where.WriteString(" AND ")
+		}
+		where.WriteString(FilterToCondition(f))
+	}
+	return where.String()
 }
