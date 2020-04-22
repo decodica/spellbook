@@ -82,8 +82,7 @@ type SupportedAction struct {
 
 type Options struct {
 	// application GCS bucket
-	PublicBucket string
-	PrivateBucket string
+	Bucket string
 	// password salt.
 	Salt         string
 	Languages    []language.Tag

@@ -32,28 +32,17 @@ func NewFileControllerWithKey(key string) *spellbook.RestController {
 	return c
 }
 
-type FileManager struct {
-	UsePrivateBucket bool
-}
+type FileManager struct{}
 
 func (manager FileManager) BucketName(ctx context.Context) (string, error) {
-	var bucket string
-	if manager.UsePrivateBucket {
-		bucket = spellbook.Application().Options().PrivateBucket
-		if bucket == "" {
-			return "", fmt.Errorf("private bucket not configured")
+	bucket := spellbook.Application().Options().Bucket
+	if bucket == "" {
+		b, err := file.DefaultBucketName(ctx)
+		if err != nil {
+			return "", fmt.Errorf("error retrieving default bucket %s", err.Error())
 		}
-	} else {
-		bucket = spellbook.Application().Options().PublicBucket
-		if bucket == "" {
-			b, err := file.DefaultBucketName(ctx)
-			if err != nil {
-				return "", fmt.Errorf("error retrieving default bucket %s", err.Error())
-			}
-			bucket = b
-		}
+		bucket = b
 	}
-
 	return bucket, nil
 }
 
