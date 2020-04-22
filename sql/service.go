@@ -82,7 +82,7 @@ func OperatorToSymbol(op spellbook.FilterOperator) string {
 		return ">="
 	case spellbook.FilterOperatorExact:
 		return "="
-	case spellbook.FilterOperatorLike:
+	case spellbook.FilterOperatorNotExact:
 		return "LIKE"
 	}
 	return "="

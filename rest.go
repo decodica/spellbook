@@ -106,29 +106,32 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 			f := Filter{Value: v}
 
 			if strings.Contains(k, ":") {
-				spt := strings.SplitN(k, ":", 2)
-				switch spt[0] {
+				spt := strings.Split(k, ":")
+				if len(spt) != 2 {
+					return nil, fmt.Errorf("the filter key must be field:modifier. A single modifier for each filter is allowed")
+				}
+				switch spt[len(spt) - 1] {
 				case "lt":
 					f.Operator = FilterOperatorLessThan
-					f.Field = spt[1]
+					f.Field = spt[0]
 				case "gt":
 					f.Operator = FilterOperatorGreaterThan
-					f.Field = spt[1]
+					f.Field = spt[0]
 				case "le":
 					f.Operator = FilterOperatorLessOrEqualThan
-					f.Field = spt[1]
+					f.Field = spt[0]
 				case "ge":
 					f.Operator = FilterOperatorGreaterOrEqualThan
-					f.Field = spt[1]
-				case "ex":
+					f.Field = spt[0]
+				case "exact":
 					f.Operator = FilterOperatorExact
-					f.Field = spt[1]
-				case "li":
+					f.Field = spt[0]
+				case "nexact":
 					f.Operator = FilterOperatorLike
-					f.Field = spt[1]
+					f.Field = spt[0]
 				default:
 					f.Operator = FilterOperatorExact
-					f.Field = spt[1]
+					f.Field = spt[0]
 				}
 			} else {
 				f.Field = k
