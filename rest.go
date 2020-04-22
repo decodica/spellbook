@@ -127,7 +127,8 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 					f.Operator = FilterOperatorLike
 					f.Field = spt[1]
 				default:
-					f.Field = k
+					f.Operator = FilterOperatorExact
+					f.Field = spt[1]
 				}
 			} else {
 				f.Field = k
