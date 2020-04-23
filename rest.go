@@ -127,7 +127,7 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 					f.Operator = FilterOperatorExact
 					f.Field = spt[0]
 				case "nexact":
-					f.Operator = FilterOperatorLike
+					f.Operator = FilterOperatorNotExact
 					f.Field = spt[0]
 				default:
 					f.Operator = FilterOperatorExact
