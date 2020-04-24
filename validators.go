@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/mail"
+	"regexp"
 	"strings"
 )
 
@@ -106,5 +107,26 @@ func (v FileNameValidator) Validate(value string) error {
 		}
 	}
 
+	return nil
+}
+
+type PhoneNumberValidator struct{}
+
+func (validator PhoneNumberValidator) Validate(value string) error {
+	tValue := strings.TrimSpace(value)
+	if !(tValue[:1] == "+" || tValue[:2] == "00" || tValue[:2] == "01") {
+		return fmt.Errorf("phone number does not start with international prefix")
+	}
+	tValue = strings.Replace(tValue, "+", "", 1)
+	tValue = strings.ReplaceAll(tValue, " ", "")
+	if len(tValue) > 15 {
+		return fmt.Errorf("phone number does not comply with E.164 international standard specifications")
+	}
+
+	if ok, err := regexp.MatchString("\\d+", tValue); err != nil {
+		return fmt.Errorf("unable to check phone number for non-numeric characters: %s", err.Error())
+	} else if !ok {
+		return fmt.Errorf("phone number contains non-numeric characters")
+	}
 	return nil
 }
