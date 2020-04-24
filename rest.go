@@ -134,6 +134,7 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 					f.Field = spt[0]
 				}
 			} else {
+				f.Operator = FilterOperatorExact
 				f.Field = k
 			}
 			opts.Filters = append(opts.Filters, f)
