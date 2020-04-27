@@ -114,6 +114,9 @@ type PhoneNumberValidator struct{}
 
 func (validator PhoneNumberValidator) Validate(value string) error {
 	tValue := strings.TrimSpace(value)
+	if len(tValue) < 8 {
+		return fmt.Errorf("phone number too short")
+	}
 	if !(tValue[:1] == "+" || tValue[:2] == "00" || tValue[:2] == "01") {
 		return fmt.Errorf("phone number does not start with international prefix")
 	}
@@ -123,10 +126,23 @@ func (validator PhoneNumberValidator) Validate(value string) error {
 		return fmt.Errorf("phone number does not comply with E.164 international standard specifications")
 	}
 
-	if ok, err := regexp.MatchString("\\d+", tValue); err != nil {
+	if ok, err := regexp.MatchString("^[+]?[\\s\\d]+$", tValue); err != nil {
 		return fmt.Errorf("unable to check phone number for non-numeric characters: %s", err.Error())
 	} else if !ok {
 		return fmt.Errorf("phone number contains non-numeric characters")
+	}
+	return nil
+}
+
+type SingleLineTextValidator struct {}
+
+func (validator SingleLineTextValidator) Validate(value string) error {
+	ok, err := regexp.MatchString("^[a-zA-Z0-9\\s]+$", value);
+	if err != nil {
+		return fmt.Errorf("unable to check for non-valid characters: %s", err.Error())
+	}
+	if !ok {
+		return fmt.Errorf("text contains non-alphanumeric characters")
 	}
 	return nil
 }
