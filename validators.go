@@ -121,7 +121,7 @@ func (validator PhoneNumberValidator) Validate(value string) error {
 		return fmt.Errorf("phone number does not start with international prefix")
 	}
 	tValue = strings.Replace(tValue, "+", "", 1)
-	tValue = strings.ReplaceAll(tValue, " ", "")
+	tValue = strings.Replace(tValue, " ", "", -1)
 	if len(tValue) > 15 {
 		return fmt.Errorf("phone number does not comply with E.164 international standard specifications")
 	}
