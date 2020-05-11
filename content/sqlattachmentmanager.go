@@ -71,7 +71,7 @@ func (manager SqlAttachmentManager) ListOf(ctx context.Context, opts spellbook.L
 	db := sql.FromContext(ctx)
 	db = db.Offset(opts.Page * opts.Size)
 
-	db = db.Where(sql.FiltersToCondition(opts.Filters))
+	db = db.Where(sql.FiltersToCondition(opts.Filters, nil))
 
 	if opts.Order != "" {
 		dir := " asc"
