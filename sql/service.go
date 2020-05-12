@@ -108,7 +108,7 @@ func FiltersToCondition(fs []spellbook.Filter, conditionsForFilters map[string]f
 		}
 		var filterCondition func(spellbook.Filter) string
 		if conditionsForFilters != nil {
-			if fc, ok := conditionsForFilters[gorm.ToColumnName(f.Value)]; ok {
+			if fc, ok := conditionsForFilters[gorm.ToColumnName(f.Field)]; ok {
 				filterCondition = fc
 			}
 		}
