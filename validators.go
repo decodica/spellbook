@@ -112,24 +112,31 @@ func (v FileNameValidator) Validate(value string) error {
 
 type PhoneNumberValidator struct{}
 
+var (
+	ErrPhoneTooShort = errors.New("phone number too short")
+	ErrPhoneNoIntlPrefix = errors.New("phone number does not start with international prefix")
+	ErrPhoneNotCompliant = errors.New("phone number does not comply with E.164 international standard specifications")
+	ErrPhoneNotNumeric = errors.New("phone number contains non-numeric characters")
+)
+
 func (validator PhoneNumberValidator) Validate(value string) error {
 	tValue := strings.TrimSpace(value)
 	if len(tValue) < 8 {
-		return fmt.Errorf("phone number too short")
+		return ErrPhoneTooShort
 	}
 	if !(tValue[:1] == "+" || tValue[:2] == "00" || tValue[:2] == "01") {
-		return fmt.Errorf("phone number does not start with international prefix")
+		return ErrPhoneNoIntlPrefix
 	}
 	tValue = strings.Replace(tValue, "+", "", 1)
 	tValue = strings.ReplaceAll(tValue, " ", "")
 	if len(tValue) > 15 {
-		return fmt.Errorf("phone number does not comply with E.164 international standard specifications")
+		return ErrPhoneNotCompliant
 	}
 
 	if ok, err := regexp.MatchString("^[+]?[\\s\\d]+$", tValue); err != nil {
 		return fmt.Errorf("unable to check phone number for non-numeric characters: %s", err.Error())
 	} else if !ok {
-		return fmt.Errorf("phone number contains non-numeric characters")
+		return ErrPhoneNotNumeric
 	}
 	return nil
 }
