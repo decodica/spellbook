@@ -128,7 +128,7 @@ func (validator PhoneNumberValidator) Validate(value string) error {
 		return ErrPhoneNoIntlPrefix
 	}
 	tValue = strings.Replace(tValue, "+", "", 1)
-	tValue = strings.ReplaceAll(tValue, " ", "")
+	tValue = strings.Replace(tValue, " ", "", -1)
 	if len(tValue) > 15 {
 		return ErrPhoneNotCompliant
 	}
