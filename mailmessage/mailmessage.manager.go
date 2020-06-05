@@ -2,10 +2,10 @@ package mailmessage
 
 import (
 	"context"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"errors"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"google.golang.org/appengine/log"
 	"reflect"
 	"sort"
@@ -49,7 +49,6 @@ func (manager MailMessageManager) FromId(ctx context.Context, strId string) (spe
 }
 
 func (manager MailMessageManager) ListOf(ctx context.Context, opts spellbook.ListOptions) ([]spellbook.Resource, error) {
-
 
 	var mailMessages []*MailMessage
 	q := model.NewQuery(&MailMessage{})

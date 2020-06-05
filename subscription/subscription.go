@@ -1,10 +1,10 @@
 package subscription
 
 import (
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"decodica.com/spellbook/format/csv"
 	"encoding/json"
+	"github.com/decodica/model/v2"
 	"time"
 )
 

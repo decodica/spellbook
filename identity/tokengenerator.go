@@ -48,7 +48,7 @@ func (tg DefaultTokenGenerator) GenerateToken() string {
 	now := time.Now().UTC().Unix()
 	src := rand.NewSource(tg.Seed)
 	rs := RandomString(l, src)
-	s := fmt.Sprintf("%s%s%d", rs,tokenSeparator, now)
+	s := fmt.Sprintf("%s%s%d", rs, tokenSeparator, now)
 	hasher := sha1.New()
 	hasher.Write([]byte(s))
 	hash := base64.URLEncoding.EncodeToString(hasher.Sum(nil))

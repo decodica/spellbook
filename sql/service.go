@@ -17,9 +17,9 @@ const sqlKey key = "__sql_connection"
 
 type Service struct {
 	Connection string
-	Debug bool
-	Migration Migration
-	db *gorm.DB
+	Debug      bool
+	Migration  Migration
+	db         *gorm.DB
 }
 
 type Migration interface {
@@ -37,7 +37,6 @@ func (service *Service) Initialize() {
 	}
 
 	db.LogMode(service.Debug)
-
 
 	service.db = db
 	if service.Migration != nil {
@@ -100,7 +99,6 @@ func FilterToCondition(f spellbook.Filter) string {
 	}
 	return fmt.Sprintf("%q %s '%s'", dbField, os, f.Value)
 }
-
 
 func FiltersToCondition(fs []spellbook.Filter) string {
 	if fs == nil || len(fs) == 0 {

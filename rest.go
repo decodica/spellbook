@@ -90,16 +90,14 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 		return nil, errors.New(msg)
 	}
 
-
 	values, err := url.ParseQuery(rq)
 	if err != nil {
 		msg := fmt.Sprintf("unparsable query: %s", rq)
 		return nil, errors.New(msg)
 	}
 
-
 	for k, vs := range values {
-		if k == FilterPageKey ||  k == FilterOrderKey || k == FilterResultsKey || k == FilterPropertyKey {
+		if k == FilterPageKey || k == FilterOrderKey || k == FilterResultsKey || k == FilterPropertyKey {
 			continue
 		}
 		for _, v := range vs {
@@ -110,7 +108,7 @@ func (handler BaseRestHandler) buildOptions(ctx context.Context, out *flamel.Res
 				if len(spt) != 2 {
 					return nil, fmt.Errorf("the filter key must be field:modifier. A single modifier for each filter is allowed")
 				}
-				switch spt[len(spt) - 1] {
+				switch spt[len(spt)-1] {
 				case "lt":
 					f.Operator = FilterOperatorLessThan
 					f.Field = spt[0]
@@ -318,7 +316,6 @@ func (handler BaseRestHandler) HandlePatch(ctx context.Context, key string, out 
 		return handler.ErrorToStatus(ctx, err, out)
 	}
 
-
 	fields := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(j.Value()), &fields); err != nil {
 		log.Errorf(ctx, "invalid json: %s", err)
@@ -328,7 +325,6 @@ func (handler BaseRestHandler) HandlePatch(ctx context.Context, key string, out 
 	if err = man.Patch(ctx, resource, fields); err != nil {
 		return handler.ErrorToStatus(ctx, err, out)
 	}
-
 
 	renderer.Data = resource
 	return flamel.HttpResponse{Status: http.StatusOK}
@@ -353,7 +349,7 @@ func (handler BaseRestHandler) HandleDelete(ctx context.Context, key string, out
 // Converts an error to its equivalent HTTP representation
 func (handler BaseRestHandler) ErrorToStatus(ctx context.Context, err error, out *flamel.ResponseOutput) flamel.HttpResponse {
 	log.Errorf(ctx, "%s", err.Error())
-	switch e :=err.(type) {
+	switch e := err.(type) {
 	case UnsupportedError:
 		return flamel.HttpResponse{Status: http.StatusMethodNotAllowed}
 	case FieldError:
@@ -361,7 +357,7 @@ func (handler BaseRestHandler) ErrorToStatus(ctx context.Context, err error, out
 		renderer.Data = struct {
 			Field string
 			Error string
-			Args []string
+			Args  []string
 		}{
 			e.field,
 			e.Error(),

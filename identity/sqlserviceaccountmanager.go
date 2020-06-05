@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-
-type SqlServiceAccountManager struct{
+type SqlServiceAccountManager struct {
 	tg TokenGenerator
 }
 
@@ -50,7 +49,6 @@ func (manager SqlServiceAccountManager) FromId(ctx context.Context, id string) (
 	if !current.HasPermission(spellbook.PermissionReadUser) {
 		return nil, spellbook.NewPermissionError(spellbook.PermissionName(spellbook.PermissionReadUser))
 	}
-
 
 	db := sql.FromContext(ctx)
 	if err := db.Where("label =  ?", id).First(&sa).Error; err != nil {
@@ -139,7 +137,6 @@ func (manager SqlServiceAccountManager) Create(ctx context.Context, res spellboo
 		return spellbook.NewFieldError("label", errors.New(msg))
 	}
 
-
 	db := sql.FromContext(ctx)
 
 	sa.Created = time.Now().UTC()
@@ -192,4 +189,3 @@ func (manager SqlServiceAccountManager) Delete(ctx context.Context, res spellboo
 
 	return nil
 }
-

@@ -2,10 +2,10 @@ package identity
 
 import (
 	"context"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"decodica.com/spellbook/sql"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"github.com/jinzhu/gorm"
 )
 
@@ -22,7 +22,7 @@ func NewSqlTokenControllerWithKey(key string) *spellbook.RestController {
 	return c
 }
 
-type SqlTokenManager struct{
+type SqlTokenManager struct {
 	UserManager spellbook.Manager
 }
 
@@ -122,4 +122,3 @@ func (manager SqlTokenManager) Delete(ctx context.Context, res spellbook.Resourc
 
 	return nil
 }
-

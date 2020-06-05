@@ -19,18 +19,19 @@ type ListOptions struct {
 }
 
 type FilterOperator string
+
 const (
-	FilterOperatorLessThan = "lt"
-	FilterOperatorGreaterThan = "gt"
-	FilterOperatorLessOrEqualThan = "le"
+	FilterOperatorLessThan           = "lt"
+	FilterOperatorGreaterThan        = "gt"
+	FilterOperatorLessOrEqualThan    = "le"
 	FilterOperatorGreaterOrEqualThan = "ge"
-	FilterOperatorExact = "exact"
-	FilterOperatorNotExact = "nexact"
+	FilterOperatorExact              = "exact"
+	FilterOperatorNotExact           = "nexact"
 )
 
 type Filter struct {
-	Field string
-	Value string
+	Field    string
+	Value    string
 	Operator FilterOperator
 }
 

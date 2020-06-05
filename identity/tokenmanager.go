@@ -3,9 +3,9 @@ package identity
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"google.golang.org/appengine/log"
 )
 

@@ -2,10 +2,10 @@ package content
 
 import (
 	"database/sql"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"encoding/json"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"strconv"
 	"time"
 )

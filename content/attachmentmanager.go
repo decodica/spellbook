@@ -2,11 +2,11 @@ package content
 
 import (
 	"context"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"decodica.com/spellbook/identity"
 	"errors"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"google.golang.org/appengine/log"
 	"reflect"
 	"sort"

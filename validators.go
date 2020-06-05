@@ -134,10 +134,10 @@ func (validator PhoneNumberValidator) Validate(value string) error {
 	return nil
 }
 
-type SingleLineTextValidator struct {}
+type SingleLineTextValidator struct{}
 
 func (validator SingleLineTextValidator) Validate(value string) error {
-	ok, err := regexp.MatchString("^[a-zA-Z0-9'\\s]+$", value);
+	ok, err := regexp.MatchString("^[a-zA-Z0-9'\\s]+$", value)
 	if err != nil {
 		return fmt.Errorf("unable to check for non-valid characters: %s", err.Error())
 	}
@@ -147,10 +147,10 @@ func (validator SingleLineTextValidator) Validate(value string) error {
 	return nil
 }
 
-type NumericValidator struct {}
+type NumericValidator struct{}
 
 func (validator NumericValidator) Validate(value string) error {
-	ok, err := regexp.MatchString("^[0-9]+$", value);
+	ok, err := regexp.MatchString("^[0-9]+$", value)
 	if err != nil {
 		return fmt.Errorf("unable to check for non-valid characters: %s", err.Error())
 	}

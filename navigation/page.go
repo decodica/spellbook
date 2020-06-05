@@ -1,9 +1,9 @@
 package navigation
 
 import (
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"encoding/json"
+	"github.com/decodica/model/v2"
 )
 
 const rootUrl = ""

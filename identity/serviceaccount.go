@@ -2,9 +2,9 @@ package identity
 
 import (
 	"database/sql"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"encoding/json"
+	"github.com/decodica/model/v2"
 	"time"
 )
 
@@ -15,14 +15,14 @@ func IsServiceAccountToken(tkn string) bool {
 }
 
 type ServiceAccount struct {
-	model.Model `json:"-"`
-	Label string `gorm:"PRIMARY_KEY;"`
-	Description string
-	Token string `gorm:"-"`
-	SqlToken sql.NullString `gorm:"UNIQUE_INDEX:idx_serviceaccount_token;column:token"`
-	IPRestrictions string // comma-separated strings for ip restrictions
-	Permission spellbook.Permission `gorm:"NOT NULL"`
-	Created time.Time
+	model.Model    `json:"-"`
+	Label          string `gorm:"PRIMARY_KEY;"`
+	Description    string
+	Token          string               `gorm:"-"`
+	SqlToken       sql.NullString       `gorm:"UNIQUE_INDEX:idx_serviceaccount_token;column:token"`
+	IPRestrictions string               // comma-separated strings for ip restrictions
+	Permission     spellbook.Permission `gorm:"NOT NULL"`
+	Created        time.Time
 }
 
 func (sa *ServiceAccount) setToken(tkn string) {
@@ -41,10 +41,10 @@ func (sa *ServiceAccount) getToken() string {
 func (sa *ServiceAccount) UnmarshalJSON(data []byte) error {
 	// username (alias StringID) must be handled by the consumer of the model
 	alias := struct {
-		Label        string   `json:"label"`
-		Description     string   `json:"description"`
-		IPRestrictions    string   `json:"ipRestrictions"`
-		Permissions []string `json:"permissions"`
+		Label          string   `json:"label"`
+		Description    string   `json:"description"`
+		IPRestrictions string   `json:"ipRestrictions"`
+		Permissions    []string `json:"permissions"`
 	}{}
 
 	err := json.Unmarshal(data, &alias)
@@ -61,11 +61,11 @@ func (sa *ServiceAccount) UnmarshalJSON(data []byte) error {
 
 func (sa *ServiceAccount) MarshalJSON() ([]byte, error) {
 	type Alias struct {
-		Label        string   `json:"label"`
-		Description     string   `json:"description"`
-		Token string `json:"token"`
-		IPRestrictions    string   `json:"ipRestrictions"`
-		Permissions []string `json:"permissions"`
+		Label          string   `json:"label"`
+		Description    string   `json:"description"`
+		Token          string   `json:"token"`
+		IPRestrictions string   `json:"ipRestrictions"`
+		Permissions    []string `json:"permissions"`
 	}
 
 	return json.Marshal(&struct {
@@ -74,11 +74,11 @@ func (sa *ServiceAccount) MarshalJSON() ([]byte, error) {
 	}{
 		sa.Label,
 		Alias{
-			Label:        sa.Label,
-			Description:     sa.Description,
-			Token: sa.getToken(),
-			IPRestrictions:       sa.IPRestrictions,
-			Permissions: sa.Permissions(),
+			Label:          sa.Label,
+			Description:    sa.Description,
+			Token:          sa.getToken(),
+			IPRestrictions: sa.IPRestrictions,
+			Permissions:    sa.Permissions(),
 		},
 	})
 }
@@ -115,7 +115,6 @@ func (sa *ServiceAccount) GrantPermission(permission spellbook.Permission) {
 func (sa *ServiceAccount) IsEnabled() bool {
 	return sa.HasPermission(spellbook.PermissionEnabled)
 }
-
 
 /**
 -- Resource implementation

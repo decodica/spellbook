@@ -3,8 +3,8 @@ package identity
 import (
 	"context"
 	"decodica.com/flamel"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
+	"github.com/decodica/model/v2"
 	"google.golang.org/appengine/user"
 )
 

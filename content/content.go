@@ -2,10 +2,10 @@ package content
 
 import (
 	"database/sql"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"encoding/json"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"strings"
 	"time"
 )
@@ -125,9 +125,9 @@ type Content struct {
 	Published        time.Time        `model:"search"`
 	PublicationState PublicationState `model:"search,atom"`
 	// todo: add slq parent id to the content model
-	ParentKey           string           `model:"search,atom" gorm:"column:parent"`
-	Code             string           `gorm:"-"`
-	SqlCode          sql.NullString   `model:"-" gorm:"column:code;UNIQUE_INDEX:content_code_locale"`
+	ParentKey string         `model:"search,atom" gorm:"column:parent"`
+	Code      string         `gorm:"-"`
+	SqlCode   sql.NullString `model:"-" gorm:"column:code;UNIQUE_INDEX:content_code_locale"`
 
 	// KeyTypeEvent
 	StartDate time.Time

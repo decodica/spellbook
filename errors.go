@@ -39,7 +39,7 @@ func (errs Errors) MarshalJSON() ([]byte, error) {
 type FieldError struct {
 	error
 	field string
-	args []string
+	args  []string
 }
 
 func NewFieldError(field string, error error) FieldError {
@@ -52,9 +52,9 @@ func (err *FieldError) AddArgument(argument string) {
 
 func (err FieldError) MarshalJSON() ([]byte, error) {
 	type Alias struct {
-		Field string `json:"field"`
-		Error string `json:"error"`
-		Args []string `json:"args"`
+		Field string   `json:"field"`
+		Error string   `json:"error"`
+		Args  []string `json:"args"`
 	}
 	return json.Marshal(Alias{err.field, err.Error(), err.args})
 }

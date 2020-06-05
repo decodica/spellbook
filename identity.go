@@ -47,8 +47,8 @@ var Permissions = map[Permission]string{
 	PermissionWritePage:         "PERMISSION_WRITE_PAGE",
 	PermissionReadSubscription:  "PERMISSION_READ_SUBSCRIPTION",
 	PermissionWriteSubscription: "PERMISSION_WRITE_SUBSCRIPTION",
-	PermissionWriteAction: "PERMISSION_READ_ACTION",
-	PermissionReadAction: "PERMISSION_WRITE_ACTION",
+	PermissionWriteAction:       "PERMISSION_READ_ACTION",
+	PermissionReadAction:        "PERMISSION_WRITE_ACTION",
 }
 
 func PermissionName(permission Permission) string {

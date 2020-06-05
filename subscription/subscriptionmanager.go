@@ -2,10 +2,10 @@ package subscription
 
 import (
 	"context"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"errors"
 	"fmt"
+	"github.com/decodica/model/v2"
 	"google.golang.org/appengine/log"
 	"reflect"
 	"sort"

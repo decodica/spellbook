@@ -4,12 +4,12 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"database/sql"
-	"decodica.com/flamel/model"
 	"decodica.com/spellbook"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/decodica/model/v2"
 	guser "google.golang.org/appengine/user"
 	"strings"
 	"time"
@@ -30,11 +30,11 @@ type User struct {
 	Name    string `gorm:"NOT NULL"`
 	Surname string `gorm:"NOT NULL"`
 	//username    string `model:"-"`
-	Email      string `gorm:"NOT NULL;UNIQUE_INDEX:idx_users_email"`
-	Password   string `gorm:"NOT NULL"`
-	Token      string `gorm:"-"`
-	SqlToken sql.NullString `model:"-" gorm:"UNIQUE_INDEX:idx_users_token;column:token"`
-	Locale     string `gorm:"NOT NULL"`
+	Email      string               `gorm:"NOT NULL;UNIQUE_INDEX:idx_users_email"`
+	Password   string               `gorm:"NOT NULL"`
+	Token      string               `gorm:"-"`
+	SqlToken   sql.NullString       `model:"-" gorm:"UNIQUE_INDEX:idx_users_token;column:token"`
+	Locale     string               `gorm:"NOT NULL"`
 	Permission spellbook.Permission `gorm:"NOT NULL"`
 	LastLogin  time.Time
 	gUser      *guser.User `model:"-",json:"-"`
