@@ -5,7 +5,6 @@ import (
 	"decodica.com/spellbook"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"strconv"
 	"strings"
 )
 
@@ -87,20 +86,17 @@ func OperatorToSymbol(op spellbook.FilterOperator) string {
 	return "="
 }
 
-func FilterToCondition(f spellbook.Filter) string {
+func FilterToCondition(f spellbook.Filter, filterCondition func(spellbook.Filter) string) string {
+	if filterCondition != nil {
+		return filterCondition(f)
+	}
 	os := OperatorToSymbol(f.Operator)
 	dbField := ToColumnName(f.Field)
-	val := f.Value
-	if val == "null" && f.Operator == spellbook.FilterOperatorExact {
-		return fmt.Sprintf("%q IS NULL", dbField)
-	}
-	if iVal, err := strconv.Atoi(val); err == nil {
-		return fmt.Sprintf("%q %s %d", dbField, os, iVal)
-	}
 	return fmt.Sprintf("%q %s '%s'", dbField, os, f.Value)
 }
 
-func FiltersToCondition(fs []spellbook.Filter) string {
+func FiltersToCondition(fs []spellbook.Filter, conditionsForFilters map[string]func(spellbook.Filter) string) string {
+
 	if fs == nil || len(fs) == 0 {
 		return ""
 	}
@@ -109,7 +105,13 @@ func FiltersToCondition(fs []spellbook.Filter) string {
 		if i > 0 {
 			where.WriteString(" AND ")
 		}
-		where.WriteString(FilterToCondition(f))
+		var filterCondition func(spellbook.Filter) string
+		if conditionsForFilters != nil {
+			if fc, ok := conditionsForFilters[gorm.ToColumnName(f.Field)]; ok {
+				filterCondition = fc
+			}
+		}
+		where.WriteString(FilterToCondition(f, filterCondition))
 	}
 	return where.String()
 }
